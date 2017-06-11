@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
-import { NavController, Platform } from 'ionic-angular';
+import { ModalController ,NavController, Platform } from 'ionic-angular';
 
 import { Camera } from '@ionic-native/camera';
 import { File, Entry } from '@ionic-native/file';
+
+import { QrcodeModal } from '../qrcode-modal/qrcode-modal';
 
 @Component({
   selector: 'page-home',
@@ -11,8 +13,10 @@ import { File, Entry } from '@ionic-native/file';
 export class HomePage {
   images: string[] = [];
   isCordova = true;
+  qrCode: any;
   constructor(
     public navCtrl: NavController,
+    private modalCtrl: ModalController,
     private camera: Camera,
     private file: File,
     private platform: Platform
@@ -34,7 +38,7 @@ export class HomePage {
           this.addImage(entry);
         }
       })
-    })
+    });
   }
 
   addPhoto() {
@@ -51,6 +55,11 @@ export class HomePage {
 
       return this.file.moveFile(path, fileName, this.file.externalDataDirectory, `${Date.now()}_marriage_${fileName}`)
     }).then((entry: Entry) => this.addImage(entry));
+  }
+
+  openModal() {
+    const qrModal = this.modalCtrl.create(QrcodeModal);
+    qrModal.present();
   }
 
   private addImage(entry: Entry) {
