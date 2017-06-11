@@ -15,7 +15,7 @@ export class Qrcode {
 
   ngOnInit() {
     let qrCode = qrcode(4, 'L');
-    qrCode.addData('http://google.com')
+    qrCode.addData(this.content)
     qrCode.make();
 
     this.qrCode = this.domSantizier.bypassSecurityTrustHtml(qrCode.createImgTag());
