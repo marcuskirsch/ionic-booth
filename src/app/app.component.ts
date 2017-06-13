@@ -4,24 +4,18 @@ import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { HomePage } from '../pages/home/home';
-import { Sync } from '../providers/sync';
-
-import Loki from 'lokijs';
 
 @Component({
   templateUrl: 'app.html'
 })
 export class MyApp implements OnInit {
   rootPage:any = HomePage;
-  private db;
 
   constructor(
     platform: Platform,
     statusBar: StatusBar,
-    splashScreen: SplashScreen,
-    private sync: Sync
+    splashScreen: SplashScreen
   ) {
-    this.db = new Loki('example.db');
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
@@ -31,9 +25,6 @@ export class MyApp implements OnInit {
   }
 
   ngOnInit() {
-    this.sync.getFiles().subscribe(files => {
-      console.log(files);
-    });
   }
 }
 

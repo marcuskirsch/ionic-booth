@@ -6,6 +6,8 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { StatusBar } from '@ionic-native/status-bar';
 import { Camera } from '@ionic-native/camera';
 import { File } from '@ionic-native/file';
+import { Transfer } from '@ionic-native/transfer';
+import { IonicStorageModule } from '@ionic/storage';
 
 import { Qrcode } from '../components/qrcode';
 
@@ -13,7 +15,7 @@ import { MyApp } from './app.component';
 import { HomePage } from '../pages/home/home';
 import { QrcodeModal } from '../pages/qrcode-modal/qrcode-modal';
 
-import { Sync } from '../providers/sync';
+import { SyncService } from '../providers/sync';
 
 @NgModule({
   declarations: [
@@ -25,7 +27,8 @@ import { Sync } from '../providers/sync';
   imports: [
     BrowserModule,
     HttpModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    IonicStorageModule.forRoot()
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -38,7 +41,8 @@ import { Sync } from '../providers/sync';
     File,
     StatusBar,
     SplashScreen,
-    Sync,
+    SyncService,
+    Transfer,
     {provide: ErrorHandler, useClass: IonicErrorHandler}
   ]
 })

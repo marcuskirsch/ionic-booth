@@ -3,8 +3,13 @@ import { ModalController ,NavController, Platform } from 'ionic-angular';
 
 import { Camera } from '@ionic-native/camera';
 import { File, Entry } from '@ionic-native/file';
+import { Storage } from '@ionic/storage';
+
+import { SyncService } from '../../providers/sync';
 
 import { QrcodeModal } from '../qrcode-modal/qrcode-modal';
+
+import 'rxjs/add/operator/toPromise';
 
 @Component({
   selector: 'page-home',
@@ -19,7 +24,9 @@ export class HomePage {
     private modalCtrl: ModalController,
     private camera: Camera,
     private file: File,
-    private platform: Platform
+    private platform: Platform,
+    private storage: Storage,
+    private syncSrv: SyncService
   ) {
     this.isCordova = platform.is('cordova');
   }
@@ -28,17 +35,8 @@ export class HomePage {
     if (!this.isCordova) {
       return;
     }
-    const pathParts = this.file.externalDataDirectory.split('/');
-    pathParts.pop();
-    const dir = pathParts.pop();
-    this.file.externalDataDirectory.split('/').pop()
-    this.file.listDir(pathParts.join('/'), dir).then((result) => {
-      result.forEach((entry) => {
-        if (entry.isFile) {
-          this.addImage(entry);
-        }
-      })
-    });
+
+    this.syncSrv.sync().then(images => this.images = images).catch(console.log);
   }
 
   addPhoto() {
@@ -63,10 +61,6 @@ export class HomePage {
   }
 
   private addImage(entry: Entry) {
-    this.images.push(this.getFilePath(entry));
-  }
-
-  private getFilePath(entry: Entry): string {
-    return `${this.file.externalDataDirectory}${entry.name}`;
+    this.images.push(this.syncSrv.getFilePath(entry.name));
   }
 }
