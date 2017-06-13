@@ -1,3 +1,9 @@
 page-home {
+  .swiper-slide {
+     background-color: color($colors, dark);
+  }
 
+  .fab ion-icon {
+    font-size: 3rem;
+  }
 }
