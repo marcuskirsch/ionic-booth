@@ -61,10 +61,10 @@ export class SyncService {
   }
 
   getLocalFiles(): Promise<string[]> {
-    const pathParts = this.file.externalDataDirectory.split('/');
+    const pathParts = this.file.dataDirectory.split('/');
     pathParts.pop();
     const dir = pathParts.pop();
-    this.file.externalDataDirectory.split('/').pop()
+    this.file.dataDirectory.split('/').pop()
 
     return this.file.listDir(pathParts.join('/'), dir)
       .then((result) => {
@@ -106,6 +106,6 @@ export class SyncService {
   }
 
   getFilePath(name: string): string {
-    return `${this.file.externalDataDirectory}${name}`;
+    return `${this.file.dataDirectory}${name}`;
   }
 }

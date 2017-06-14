@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { ModalController ,NavController, Platform, Slides } from 'ionic-angular';
+import { ModalController ,NavController, Platform, Slides, ToastController } from 'ionic-angular';
 
 import { Camera } from '@ionic-native/camera';
 import { File, Entry } from '@ionic-native/file';
@@ -31,7 +31,8 @@ export class HomePage {
     private file: File,
     private platform: Platform,
     private storage: Storage,
-    private syncSrv: SyncService
+    private syncSrv: SyncService,
+    private toastCtrl: ToastController
   ) {
     this.isCordova = platform.is('cordova');
   }
@@ -46,7 +47,10 @@ export class HomePage {
       this.imageUploadedHandler(uploadedImage);
     });
 
-    this.syncSrv.sync().then(images => this.images = images).catch(console.log);
+    this.platform.ready().then((readySource) => {
+      this.syncSrv.sync().then(images => this.images = images).catch(console.log);
+    });
+
   }
 
   addPhoto() {
@@ -61,8 +65,8 @@ export class HomePage {
       const fileName = pathParts.pop();
       const path = pathParts.join('/');
 
-      return this.file.moveFile(path, fileName, this.file.externalDataDirectory, `${Date.now()}_marriage_${fileName}`)
-    }).then((entry: Entry) => this.addImage(entry));
+      return this.file.moveFile(path, fileName, this.file.dataDirectory, `${Date.now()}_marriage_${fileName}`)
+    }).then((entry: Entry) => this.addImage(this.syncSrv.getFilePath(entry.name)));
   }
 
   openModal() {
@@ -70,14 +74,22 @@ export class HomePage {
     qrModal.present();
   }
 
-  private addImage(entry: Entry) {
-    this.images.push(this.syncSrv.getFilePath(entry.name));
+  private addImage(image: string) {
+    this.images.push(image);
+    this.slides.update();
   }
 
   private imageUploadedHandler(uploadedImage) {
     this.syncSrv.download(uploadedImage.path_lower).then(downloadedFile => {
-      this.images = [downloadedFile].concat(this.images.sort(() => { return 0.5 - Math.random() }));
-      this.slides.slideTo(0);
+      this.addImage(downloadedFile);
+
+      let toast = this.toastCtrl.create({
+        message: 'Ein neues Bild ist da!',
+        duration: 3000,
+        position: 'top'
+      });
+
+      toast.present();
     })
   }
 }
