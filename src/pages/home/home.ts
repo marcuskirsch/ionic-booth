@@ -1,11 +1,13 @@
-import { Component } from '@angular/core';
-import { ModalController ,NavController, Platform } from 'ionic-angular';
+import { Component, ViewChild } from '@angular/core';
+import { ModalController ,NavController, Platform, Slides } from 'ionic-angular';
 
 import { Camera } from '@ionic-native/camera';
 import { File, Entry } from '@ionic-native/file';
 import { Storage } from '@ionic/storage';
 
-import { SyncService } from '../../providers/sync';
+import io from 'socket.io-client';
+
+import { SyncService, HOST } from '../../providers/sync';
 
 import { QrcodeModal } from '../qrcode-modal/qrcode-modal';
 
@@ -16,9 +18,12 @@ import 'rxjs/add/operator/toPromise';
   templateUrl: 'home.html'
 })
 export class HomePage {
+  @ViewChild(Slides) slides: Slides;
+
   images: string[] = [];
   isCordova = true;
   qrCode: any;
+  socket: any;
   constructor(
     public navCtrl: NavController,
     private modalCtrl: ModalController,
@@ -35,6 +40,11 @@ export class HomePage {
     if (!this.isCordova) {
       return;
     }
+
+    this.socket = io(HOST);
+    this.socket.on('image_uploaded', (uploadedImage) => {
+      this.imageUploadedHandler(uploadedImage);
+    });
 
     this.syncSrv.sync().then(images => this.images = images).catch(console.log);
   }
@@ -62,5 +72,12 @@ export class HomePage {
 
   private addImage(entry: Entry) {
     this.images.push(this.syncSrv.getFilePath(entry.name));
+  }
+
+  private imageUploadedHandler(uploadedImage) {
+    this.syncSrv.download(uploadedImage.path_lower).then(downloadedFile => {
+      this.images = [downloadedFile].concat(this.images.sort(() => { return 0.5 - Math.random() }));
+      this.slides.slideTo(0);
+    })
   }
 }

@@ -8,7 +8,9 @@ import 'rxjs/add/operator/toPromise';
 import { Transfer, TransferObject } from '@ionic-native/transfer';
 import { File } from '@ionic-native/file';
 
-const HOST = 'https://dropbox-booth.herokuapp.com/dropbox' //'https://dropbox-booth.herokuapp.com/dropbox' //'http://localhost:5000/dropbox';
+export const HOST = 'https://dropbox-booth.herokuapp.com'; //'http://localhost:5000'
+export const API_URL = HOST + '/dropbox';
+
 
 @Injectable()
 export class SyncService {
@@ -23,7 +25,7 @@ export class SyncService {
 
     const requestOptions = new RequestOptions({
       method: RequestMethod.Get,
-      url: `${HOST}/hochzeit_benny`,
+      url: `${API_URL}/hochzeit_benny`,
       headers: headers
     })
 
@@ -38,7 +40,7 @@ export class SyncService {
 
     const requestOptions = new RequestOptions({
       method: RequestMethod.Get,
-      url: `${HOST}${path}`,
+      url: `${API_URL}${path}`,
       headers: headers
     })
 

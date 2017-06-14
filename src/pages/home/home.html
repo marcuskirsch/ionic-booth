@@ -1,5 +1,5 @@
 <ion-content>
-  <ion-slides autoplay="3000" effect="fade" class="swiper-no-swiping" loop="true" *ngIf="images && images.length">
+  <ion-slides #slides autoplay="3000" effect="fade" class="swiper-no-swiping" loop="true" *ngIf="images && images.length">
     <ion-slide *ngFor="let image of images">
       <img [src]="image">
     </ion-slide>
