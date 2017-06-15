@@ -21,7 +21,9 @@ export class SyncService {
     private file: File,
     platform: Platform
   ) {
-    this._targetDir = platform.is('android') ? file.externalDataDirectory : file.documentsDirectory ;
+    platform.ready().then(() => {
+      this._targetDir = platform.is('android') ? file.externalDataDirectory : file.documentsDirectory;
+    });
   }
 
   get targetDir(): string {

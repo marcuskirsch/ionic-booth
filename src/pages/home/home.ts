@@ -1,5 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
-import { ModalController ,NavController, Platform, Slides, ToastController } from 'ionic-angular';
+import { ModalController ,NavController, Platform, Slides, ToastController, LoadingController } from 'ionic-angular';
 
 import { Camera } from '@ionic-native/camera';
 import { File, Entry } from '@ionic-native/file';
@@ -32,7 +32,8 @@ export class HomePage {
     private platform: Platform,
     private storage: Storage,
     private syncSrv: SyncService,
-    private toastCtrl: ToastController
+    private toastCtrl: ToastController,
+    private loadingCtrl: LoadingController
   ) {
     this.isCordova = platform.is('cordova');
   }
@@ -41,16 +42,30 @@ export class HomePage {
     if (!this.isCordova) {
       return;
     }
+    let loader;
 
     this.socket = io(HOST);
     this.socket.on('image_uploaded', (uploadedImage) => this.imageUploadedHandler(uploadedImage));
 
+
     this.platform.ready()
-      .then((readySource) => {
+      .then(() => {
+        loader = this.loadingCtrl.create({
+          content: "Bitte warten..."
+        })
+        loader.present()
+
         return this.syncSrv.sync()
       })
-      .then(images => this.images = images)
+      .then(images => {
+        loader.dismiss();
+        setInterval(() => {this.syncSrv.sync().then(images => this.images = images) }, 5 * 60 * 1000);
+
+        return this.images = images
+      })
       .catch(console.log);
+
+
   }
 
   addPhoto() {
