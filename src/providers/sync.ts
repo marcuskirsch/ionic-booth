@@ -7,15 +7,25 @@ import 'rxjs/add/operator/toPromise';
 
 import { Transfer, TransferObject } from '@ionic-native/transfer';
 import { File } from '@ionic-native/file';
+import { Platform } from 'ionic-angular';
 
 export const HOST = 'https://dropbox-booth.herokuapp.com'; //'http://localhost:5000'
 export const API_URL = HOST + '/dropbox';
 
-
 @Injectable()
 export class SyncService {
-  private ;
-  constructor(private http: Http, private transfer: Transfer, private file: File) {
+  private _targetDir: string;
+  constructor(
+    private http: Http,
+    private transfer: Transfer,
+    private file: File,
+    platform: Platform
+  ) {
+    this._targetDir = platform.is('android') ? file.externalDataDirectory : file.documentsDirectory ;
+  }
+
+  get targetDir(): string {
+    return this._targetDir;
   }
 
   getDropBoxFiles(): Observable<any> {
@@ -61,10 +71,10 @@ export class SyncService {
   }
 
   getLocalFiles(): Promise<string[]> {
-    const pathParts = this.file.dataDirectory.split('/');
+    const pathParts = this.targetDir.split('/');
     pathParts.pop();
     const dir = pathParts.pop();
-    this.file.dataDirectory.split('/').pop()
+    this.targetDir.split('/').pop()
 
     return this.file.listDir(pathParts.join('/'), dir)
       .then((result) => {
@@ -106,6 +116,6 @@ export class SyncService {
   }
 
   getFilePath(name: string): string {
-    return `${this.file.dataDirectory}${name}`;
+    return `${this.targetDir}${name}`;
   }
 }

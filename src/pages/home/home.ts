@@ -43,19 +43,20 @@ export class HomePage {
     }
 
     this.socket = io(HOST);
-    this.socket.on('image_uploaded', (uploadedImage) => {
-      this.imageUploadedHandler(uploadedImage);
-    });
+    this.socket.on('image_uploaded', (uploadedImage) => this.imageUploadedHandler(uploadedImage));
 
-    this.platform.ready().then((readySource) => {
-      this.syncSrv.sync().then(images => this.images = images).catch(console.log);
-    });
-
+    this.platform.ready()
+      .then((readySource) => {
+        return this.syncSrv.sync()
+      })
+      .then(images => this.images = images)
+      .catch(console.log);
   }
 
   addPhoto() {
     this.camera.getPicture({
       allowEdit: true,
+      cameraDirection: this.camera.Direction.FRONT,
       targetWidth: 1920,
       targetHeight: 1080,
       destinationType: this.camera.DestinationType.FILE_URI,
@@ -65,7 +66,7 @@ export class HomePage {
       const fileName = pathParts.pop();
       const path = pathParts.join('/');
 
-      return this.file.moveFile(path, fileName, this.file.dataDirectory, `${Date.now()}_marriage_${fileName}`)
+      return this.file.moveFile(path, fileName, this.syncSrv.targetDir, `${Date.now()}_marriage_${fileName}`);
     }).then((entry: Entry) => this.addImage(this.syncSrv.getFilePath(entry.name)));
   }
 
@@ -75,14 +76,13 @@ export class HomePage {
   }
 
   private addImage(image: string) {
-    this.images.push(image);
+    const index = this.slides.getActiveIndex();
+    this.images.splice(index, 0, image);
     this.slides.update();
   }
 
   private imageUploadedHandler(uploadedImage) {
     this.syncSrv.download(uploadedImage.path_lower).then(downloadedFile => {
-      this.addImage(downloadedFile);
-
       let toast = this.toastCtrl.create({
         message: 'Ein neues Bild ist da!',
         duration: 3000,
@@ -90,6 +90,9 @@ export class HomePage {
       });
 
       toast.present();
-    })
+      toast.onDidDismiss(() => {
+        this.addImage(downloadedFile);
+      });
+    });
   }
 }
