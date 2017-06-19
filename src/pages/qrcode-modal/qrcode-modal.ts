@@ -15,7 +15,7 @@ import { ViewController } from 'ionic-angular';
     </ion-navbar>
   </ion-header>
   <ion-content padding text-center>
-    <p>Zum Hochladen eigener Bilder könnt ihr einfach folgenden Barcode abscannen oder den darunter stehende Link auf eurem Gerät aufrufen.</p>
+    <p>Zum Hochladen eigener Bilder könnt ihr einfach folgenden Barcode abscannen oder den darunter stehenden Link auf eurem Gerät aufrufen.</p>
     <booth-qrcode content="{{url}}"></booth-qrcode>
     <b>http://tinyurl.com/yck8sca5</b>
   </ion-content>
