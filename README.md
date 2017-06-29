@@ -1,27 +1,18 @@
-This is a starter template for [Ionic](http://ionicframework.com/docs/) projects.
+# Ionic Booth
 
-## How to use this template
+This is the repository of the Ionic Photo Booth App. We use Ionic 3 with Angular 4.
 
-*This template does not work on its own*. The shared files for each starter are found in the [ionic2-app-base repo](https://github.com/ionic-team/ionic2-app-base).
+The app shows a photo gallery with pictures of a Dropbox folder. You can also take own pictures that will be shown at the slideshow.
 
-To use this template, either create a new ionic project using the ionic node.js utility, or copy the files from this repository into the [Starter App Base](https://github.com/ionic-team/ionic2-app-base).
+To use the app you need the [dropbox-booth](https://github.com/marcuskirsch/dropbox-booth). This server takes the communication with Dropbox. When you start your app at first time it will download all images from a defined Dropbox folder. Afterwards, all the pictures are stored in the local memory.
 
-### With the Ionic CLI:
+Other people can also upload pictures to the defined Dropbox-Folder. For this purpose, the users must call an URL that is stored in the app with their browser. Then the user will be forwarded to a page with an image upload function. If an image has been uploaded, the app will be notified via websockets and  download the image.
 
-Take the name after `ionic2-starter-`, and that is the name of the template to be used when using the `ionic start` command below:
+## Getting Started
 
-```bash
-$ sudo npm install -g ionic cordova
-$ ionic start myBlank blank
-```
+To get started, clone this repo, and run `npm install` in the root directory. After this run `ionic serve`. This will start the dev server and open your browser at `http://localhost:8100/`.
 
-Then, to run it, cd into `myBlank` and run:
+## Communication with Dropbox Booth
 
-```bash
-$ ionic cordova platform add ios
-$ ionic cordova run ios
-```
+If the app should communicate with the Dropbox Booth, you need to configure the `HOST` constant at `sync.ts`. For example you start the server on your local machine `HOST = 'http://localhost:5000'`.
 
-Substitute ios for android if not on a Mac.
-
-# ionic-booth
